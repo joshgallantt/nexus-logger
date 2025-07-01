@@ -9,11 +9,12 @@ import SwiftUI
 import NexusLogger
 
 @main
-struct nexus_logger_exampleApp: App {
+struct NexusLoggerExampleApp: App {
     
     init() {
         Task {
             await NexusLogger.shared.addDestination(DefaultOSLoggerDestination())
+            await NexusLogger.shared.addDestination(DefaultXcodeConsoleDebugDestination())
             NLog("Logger initialized", .success)
         }
     }
