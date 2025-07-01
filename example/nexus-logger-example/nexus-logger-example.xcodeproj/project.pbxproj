@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		14112D1D2E14516600D0A255 /* nexus-logger in Frameworks */ = {isa = PBXBuildFile; productRef = 14112D1C2E14516600D0A255 /* nexus-logger */; };
+		14112D2C2E1473E600D0A255 /* NexusLogger in Frameworks */ = {isa = PBXBuildFile; productRef = 14112D2B2E1473E600D0A255 /* NexusLogger */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -27,7 +27,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				14112D1D2E14516600D0A255 /* nexus-logger in Frameworks */,
+				14112D2C2E1473E600D0A255 /* NexusLogger in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -38,6 +38,7 @@
 			isa = PBXGroup;
 			children = (
 				14112D0F2E14511800D0A255 /* nexus-logger-example */,
+				14112D2A2E1473E600D0A255 /* Frameworks */,
 				14112D0E2E14511800D0A255 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -48,6 +49,13 @@
 				14112D0D2E14511800D0A255 /* nexus-logger-example.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		14112D2A2E1473E600D0A255 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -70,7 +78,7 @@
 			);
 			name = "nexus-logger-example";
 			packageProductDependencies = (
-				14112D1C2E14516600D0A255 /* nexus-logger */,
+				14112D2B2E1473E600D0A255 /* NexusLogger */,
 			);
 			productName = "nexus-logger-example";
 			productReference = 14112D0D2E14511800D0A255 /* nexus-logger-example.app */;
@@ -361,9 +369,10 @@
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		14112D1C2E14516600D0A255 /* nexus-logger */ = {
+		14112D2B2E1473E600D0A255 /* NexusLogger */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = "nexus-logger";
+			package = 14112D1B2E14516600D0A255 /* XCLocalSwiftPackageReference "../../../nexus-logger" */;
+			productName = NexusLogger;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

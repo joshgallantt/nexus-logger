@@ -4,23 +4,26 @@
 import PackageDescription
 
 let package = Package(
-    name: "nexus-logger",
+    name: "NexusLogger",
+    platforms: [
+        .iOS(.v15),
+        .macOS(.v12)
+    ],
     products: [
-        // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
-            name: "nexus-logger",
-            targets: ["nexus-logger"]
+            name: "NexusLogger",
+            targets: ["NexusLogger"]
         ),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
         .target(
-            name: "nexus-logger"
+            name: "NexusLogger"
         ),
         .testTarget(
-            name: "nexus-loggerTests",
-            dependencies: ["nexus-logger"]
+            name: "NexusLoggerTests",
+            dependencies: ["NexusLogger"]
         ),
     ]
 )

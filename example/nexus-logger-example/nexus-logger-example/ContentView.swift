@@ -1,6 +1,6 @@
 //
 //  ContentView.swift
-//  nexus-logger-example
+//  NexusLoggerExample
 //
 //  Created by Josh Gallant on 01/07/2025.
 //
