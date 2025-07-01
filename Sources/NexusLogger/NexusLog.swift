@@ -5,14 +5,15 @@
 //  Created by Josh Gallant on 01/07/2025.
 //
 
-public struct NexusLog: Sendable {
-    let level: NexusLogLevel
-    let time: String
-    let bundleName: String
-    let appVersion: String
-    let fileName: String
-    let functionName: String
-    let lineNumber: String
-    let message: String
-    let attributes: [String: String]?
+package struct NexusLog: Sendable {
+    public let level: NexusLogLevel
+    public let time: String
+    public let bundleName: String
+    public let appVersion: String
+    public let fileName: String
+    public let functionName: String
+    public let lineNumber: String
+    public let threadName: String
+    public let message: String
+    public let attributes: [String: String]?
 }

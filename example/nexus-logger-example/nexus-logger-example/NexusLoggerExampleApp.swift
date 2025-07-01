@@ -14,8 +14,14 @@ struct NexusLoggerExampleApp: App {
     init() {
         Task {
             await NexusLogger.shared.addDestination(DefaultOSLoggerDestination())
-            await NexusLogger.shared.addDestination(DefaultXcodeConsoleDebugDestination())
+            NLog("   ", .success)
+            NLog("Logger|initialized", .success)
+            NLog("Logger initialized", .debug)
+            NLog("Logger initialized", .info)
             NLog("Logger initialized", .success)
+            NLog("Logger initialized", .warning)
+            NLog("Logger initialized", .error)
+            NLog("Logger initialized", .fault)
         }
     }
 

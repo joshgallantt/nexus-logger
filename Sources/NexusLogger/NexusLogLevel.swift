@@ -5,25 +5,47 @@
 //  Created by Josh Gallant on 01/07/2025.
 //
 
+/// Represents the severity of a log message in an iOS app.
+/// Ordered from least to most critical: `.debug` < `.info` < `.success` < `.warning` < `.error` < `.fault`.
 public enum NexusLogLevel: Int, Sendable, Comparable, CaseIterable {
-    case debug = 0  // Lowest severity
-    case info
-    case success
-    case warning
-    case error
-    case critical   // Highest severity
 
+    /// Detailed debug info used during development.
+    /// Example: view lifecycle events, API request payloads.
+    case debug = 0
+
+    /// Informational messages about normal app behavior.
+    /// Example: screen navigation, configuration updates.
+    case info
+
+    /// Positive outcomes that may be useful for analytics or QA.
+    /// Example: login success, purchase completed, sync finished.
+    case success
+
+    /// Recoverable issues or unusual conditions.
+    /// Example: network retry, missing optional field, degraded mode.
+    case warning
+
+    /// Expected but unrecoverable errors that require developer attention.
+    /// Example: decoding failure, file not found, unauthorized response.
+    case error
+
+    /// Unexpected and critical issues that should never occur.
+    /// Example: assertion failures, data corruption, force-unwrapped nil.
+    case fault
+
+    /// Emoji for quick visual identification in logs.
     public var emoji: String {
         switch self {
-        case .debug:     return "🟣"
-        case .info:      return "🔵"
-        case .success:   return "🟢"
-        case .warning:   return "🟡"
-        case .error:     return "🔴"
-        case .critical:  return "⚫️"
+        case .debug:     return "🟪"
+        case .info:      return "🟦"
+        case .success:   return "🟩"
+        case .warning:   return "🟨"
+        case .error:     return "🟥"
+        case .fault:     return "⬛️"
         }
     }
 
+    /// Uppercase string name for use in log formatting.
     public var name: String {
         switch self {
         case .debug:     return "DEBUG"
@@ -31,12 +53,12 @@ public enum NexusLogLevel: Int, Sendable, Comparable, CaseIterable {
         case .success:   return "SUCCESS"
         case .warning:   return "WARNING"
         case .error:     return "ERROR"
-        case .critical:  return "CRITICAL"
+        case .fault:     return "FAULT"
         }
     }
 
+    /// Compares severity between two log levels.
     public static func < (lhs: NexusLogLevel, rhs: NexusLogLevel) -> Bool {
         lhs.rawValue < rhs.rawValue
     }
 }
-

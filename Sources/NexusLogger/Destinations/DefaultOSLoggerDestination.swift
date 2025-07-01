@@ -10,7 +10,8 @@ import os
 
 /// A logger destination that routes logs to Apple's Unified Logging system (os.Logger),
 /// with emoji and machine-friendly, delimiter-separated output.
-public final class DefaultOSLoggerDestination: NexusLogDestination {
+public struct DefaultOSLoggerDestination: NexusLogDestination {
+    
     private let logger: Logger
 
     public init(
@@ -27,49 +28,73 @@ public final class DefaultOSLoggerDestination: NexusLogDestination {
         case .success:  return .default
         case .warning:  return .error
         case .error:    return .error
-        case .critical: return .fault
+        case .fault:    return .fault
         }
     }
 
-    /// 🟢SUCCESS|2025-06-19T20:26:45.757Z|com.my.bundle|v1.0|Main.swift:31|init()|"Logger initialized"|key=value,...
     public func log(
         level: NexusLogLevel,
         time: String,
         bundleName: String,
         appVersion: String,
         fileName: String,
-        functionName: String,
         lineNumber: String,
+        threadName: String,
+        functionName: String,
         message: String,
         attributes: [String: String]? = nil
     ) async {
-        let emoji       = level.emoji
-        let levelText   = level.name
-        let isoTime     = time
-        let bundle      = bundleName
-        let version     = appVersion
-        let fileLine    = "\(fileName):\(lineNumber)"
-        let function    = functionName
-        let quotedMsg   = "\"\(message)\""
-        let attrString  = attributes?
-            .map { "\($0)=\($1)" }
-            .joined(separator: ",")
-            ?? ""
+        // 0) Normalize the message
+        let trimmed = message.trimmingCharacters(in: .whitespacesAndNewlines)
+        let nonEmpty = trimmed.isEmpty ? "<no message>" : trimmed
 
-        // Compose fields: LEVEL|TIME|BUNDLE|VERSION|FILE:LINE|FUNCTION|"MESSAGE"|[ATTRS]
-        let formatted = [
-            "\(emoji)\(levelText)",
-            isoTime,
-            bundle,
-            "v\(version)",
+        // 1) Sanitize fields
+        let msgField     = sanitizeString(nonEmpty)
+        let timeField    = sanitizeString(time)
+        let bundleField  = sanitizeString(bundleName)
+        let versionField = sanitizeString(appVersion)
+        let fileLine     = "\(sanitizeString(fileName)):\(lineNumber)"
+        let threadField  = sanitizeString(threadName)
+        let funcField    = sanitizeString(functionName)
+
+        // 2) Build header (now 8 fields, thread after file:line)
+        let headerFields = [
+            "\(level.emoji)\(level.name)",
+            timeField,
+            bundleField,
+            versionField,
             fileLine,
-            function,
-            quotedMsg
-        ].joined(separator: "|")
-        let output = attrString.isEmpty
-            ? formatted
-            : formatted + "|" + attrString
+            threadField,
+            funcField,
+            "\"\(msgField)\""
+        ]
+        let header = headerFields.joined(separator: "|")
 
+        // 3) Append attributes if present
+        let attrPart: String
+        if let pairs = attributes, !pairs.isEmpty {
+            let kvs = pairs
+                .map { key, val in "\(sanitizeString(key))=\(sanitizeString(val))" }
+                .joined(separator: ",")
+            attrPart = "|\(kvs)"
+        } else {
+            attrPart = ""
+        }
+
+        // 4) Emit to os.Logger
+        let output = header + attrPart
         logger.log(level: osLogType(for: level), "\(output)")
+    }
+
+    private func sanitizeString(_ input: String) -> String {
+        input
+            .replacingOccurrences(of: "\\", with: "\\\\")
+            .replacingOccurrences(of: "\n", with: "\\n")
+            .replacingOccurrences(of: "\r", with: "\\r")
+            .replacingOccurrences(of: "\t", with: "\\t")
+            .replacingOccurrences(of: "|", with: "\\|")
+            .replacingOccurrences(of: "\"", with: "\\\"")
+            .replacingOccurrences(of: ",", with: "\\,")
+            .replacingOccurrences(of: "=", with: "\\=")
     }
 }

@@ -12,10 +12,12 @@ public protocol NexusLogDestination: Sendable {
     /// - Parameters:
     ///   - level:        Severity (developer-provided)
     ///   - time:         Timestamp of the log
+    ///   - bundleName:   Application Name
     ///   - appVersion:   Application version
     ///   - fileName:     Source file name
-    ///   - functionName: Function name
     ///   - lineNumber:   Line number
+    ///   - threadName:   Originating Thread
+    ///   - functionName: Function name
     ///   - message:      Log message (developer-provided)
     ///   - attributes:   Custom event fields (developer-provided)
     func log(
@@ -24,8 +26,9 @@ public protocol NexusLogDestination: Sendable {
         bundleName: String,
         appVersion: String,
         fileName: String,
-        functionName: String,
         lineNumber: String,
+        threadName: String,
+        functionName: String,
         message: String,
         attributes: [String: String]?
     ) async

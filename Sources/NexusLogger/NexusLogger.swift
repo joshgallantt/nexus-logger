@@ -7,18 +7,20 @@
 
 import Foundation
 
-protocol NexusLoggerProtocol: Sendable {
+public protocol NexusLoggerProtocol: Sendable {
     func log(
         _ message: String,
         _ level: NexusLogLevel,
         attributes: [String: String]?,
         file: String,
-        function: String,
-        line: Int
+        line: Int,
+        thread: String,
+        function: String
     ) async
 }
 
 public actor NexusLogger: NexusLoggerProtocol {
+    
     public static let shared = NexusLogger()
     package var destinations: [NexusLogDestination] = []
     
@@ -42,13 +44,14 @@ public actor NexusLogger: NexusLoggerProtocol {
         _ level: NexusLogLevel = .info,
         attributes: [String: String]? = nil,
         file: String = #file,
-        function: String = #function,
-        line: Int = #line
-    ) {
+        line: Int = #line,
+        thread: String,
+        function: String = #function
+    ) async {
         let now = isoFormatter.string(from: Date())
         let fileName = (file as NSString).lastPathComponent
 
-        let msg = NexusLog(
+        let entry = NexusLog(
             level: level,
             time: now,
             bundleName: bundleInfo.name,
@@ -56,13 +59,12 @@ public actor NexusLogger: NexusLoggerProtocol {
             fileName: fileName,
             functionName: function,
             lineNumber: String(line),
+            threadName: thread,
             message: message,
             attributes: attributes
         )
 
-        Task {
-            await dispatcher.enqueue(msg)
-        }
+        await dispatcher.enqueue(entry)
     }
 }
 
@@ -113,8 +115,9 @@ public actor NexusLogDispatcher {
                             bundleName: msg.bundleName,
                             appVersion: msg.appVersion,
                             fileName: msg.fileName,
-                            functionName: msg.functionName,
                             lineNumber: msg.lineNumber,
+                            threadName: msg.threadName,
+                            functionName: msg.functionName,
                             message: msg.message,
                             attributes: msg.attributes
                         )
@@ -129,16 +132,28 @@ public actor NexusLogDispatcher {
         function: String = #function,
         line: Int = #line
     ) -> NexusLog {
-        let bundleInfo = BundleInfo()
-        
+
+        let threadName: String = {
+            if Thread.isMainThread {
+                return "main"
+            } else if let name = Thread.current.name, !name.isEmpty {
+                return name
+            } else {
+                var tid: UInt64 = 0
+                pthread_threadid_np(nil, &tid)
+                return "thread-\(tid)"
+            }
+        }()
+
         return NexusLog(
-            level: .critical,
+            level: .fault,
             time: isoFormatter.string(from: Date()),
-            bundleName: bundleInfo.name,
-            appVersion: bundleInfo.version,
+            bundleName: BundleInfo().name,
+            appVersion: BundleInfo().version,
             fileName: (file as NSString).lastPathComponent,
             functionName: function,
             lineNumber: String(line),
+            threadName: threadName,
             message: "NexusLogger buffer exceeded \(maxQueueSize)! Oldest log was dropped.",
             attributes: nil
         )
