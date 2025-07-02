@@ -14,23 +14,22 @@ public enum NexusLogLevel: Int, Sendable, Comparable, CaseIterable {
     case debug = 0
 
     /// Informational messages about normal app behavior.
-    /// Example: screen navigation, configuration updates.
+    /// Example: screen navigation, configuration updates, user interaction.
     case info
 
-    /// Positive outcomes that may be useful for analytics or QA.
-    /// Example: login success, purchase completed, sync finished.
+    /// Key positive events that may be useful for analytics or QA.
+    /// Example: login success, purchase completed.
     case success
 
     /// Recoverable issues or unusual conditions.
-    /// Example: network retry, missing optional field, degraded mode.
+    /// Example: missing optional field, entering degraded mode.
     case warning
 
     /// Expected but unrecoverable errors that require developer attention.
     /// Example: decoding failure, file not found, unauthorized response.
     case error
 
-    /// Unexpected and critical issues that should never occur.
-    /// Example: assertion failures, data corruption, force-unwrapped nil.
+    /// Entered a expected and critical state that should never occur.
     case fault
 
     /// Emoji for quick visual identification in logs.

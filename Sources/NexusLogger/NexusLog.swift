@@ -5,7 +5,7 @@
 //  Created by Josh Gallant on 01/07/2025.
 //
 
-package struct NexusLog: Sendable {
+public struct NexusLog: Sendable {
     public let level: NexusLogLevel
     public let time: String
     public let bundleName: String

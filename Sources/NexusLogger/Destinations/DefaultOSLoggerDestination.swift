@@ -9,7 +9,6 @@ import Foundation
 import os
 
 /// A logger destination that routes logs to Apple's Unified Logging system (os.Logger),
-/// with emoji and machine-friendly, delimiter-separated output.
 public struct DefaultOSLoggerDestination: NexusLogDestination {
     
     private let logger: Logger
@@ -57,8 +56,8 @@ public struct DefaultOSLoggerDestination: NexusLogDestination {
         let threadField  = sanitizeString(threadName)
         let funcField    = sanitizeString(functionName)
 
-        // 2) Build header (now 8 fields, thread after file:line)
-        let headerFields = [
+        // 2) Build sections
+        let sections = [
             "\(level.emoji)\(level.name)",
             timeField,
             bundleField,
@@ -68,7 +67,8 @@ public struct DefaultOSLoggerDestination: NexusLogDestination {
             funcField,
             "\"\(msgField)\""
         ]
-        let header = headerFields.joined(separator: "|")
+        
+        let sectionsDelimitted = sections.joined(separator: "|")
 
         // 3) Append attributes if present
         let attrPart: String
@@ -82,7 +82,7 @@ public struct DefaultOSLoggerDestination: NexusLogDestination {
         }
 
         // 4) Emit to os.Logger
-        let output = header + attrPart
+        let output = sectionsDelimitted + attrPart
         logger.log(level: osLogType(for: level), "\(output)")
     }
 
