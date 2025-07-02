@@ -28,26 +28,20 @@ public func NLog(
     line: Int = #line
 ) {
     let threadName: String = {
-        if Thread.isMainThread {
-            return "main"
-        } else if let name = Thread.current.name, !name.isEmpty {
-            return name
-        } else {
-            var tid: UInt64 = 0
-            pthread_threadid_np(nil, &tid)
-            return "thread-\(tid)"
-        }
+        if Thread.isMainThread { return "main" }
+        if let name = Thread.current.name, !name.isEmpty { return name }
+        var tid: UInt64 = 0
+        pthread_threadid_np(nil, &tid)
+        return "thread-\(tid)"
     }()
 
-    Task {
-        await NexusLogger.shared.log(
-            message,
-            level,
-            attributes: attributes,
-            file: file,
-            line: line,
-            thread: threadName,
-            function: function
-        )
-    }
+    NexusLogger.shared.log(
+        message,
+        level,
+        attributes: attributes,
+        file: file,
+        line: line,
+        thread: threadName,
+        function: function
+    )
 }

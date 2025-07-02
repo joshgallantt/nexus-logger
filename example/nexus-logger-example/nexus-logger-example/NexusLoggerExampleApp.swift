@@ -12,15 +12,14 @@ import NexusLogger
 struct NexusLoggerExampleApp: App {
     
     init() {
-        Task {
-            await NexusLogger.shared.addDestination(DefaultOSLoggerDestination())
-            NLog("Logger initialized", .debug)
-            NLog("Logger initialized", .info)
-            NLog("Notice", .notice)
-            NLog("Logger initialized", .warning)
-            NLog("Logger initialized", .error)
-            NLog("Fault", .fault)
-        }
+        DestinationStore.shared.addDestination(DefaultOSLoggerDestination())
+
+        NLog("Logger initialized", .debug)
+        NLog("Logger initialized", .info)
+        NLog("Notice", .notice)
+        NLog("Logger initialized", .warning)
+        NLog("Logger initialized", .error)
+        NLog("Fault", .fault)
     }
 
     
@@ -29,4 +28,5 @@ struct NexusLoggerExampleApp: App {
             ContentView()
         }
     }
+    
 }
