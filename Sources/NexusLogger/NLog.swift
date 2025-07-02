@@ -15,7 +15,7 @@ import Foundation
 ///     - `.info`   : Informational messages (e.g., screen nav, config updates)
 ///     - `.success`: Positive outcomes (e.g., login success, sync finished)
 ///     - `.warning`: Recoverable but unusual conditions (e.g., network retry, missing optional field)
-///     - `.error`  :  Expected but unrecoverable errors that require developer attention. (e.g., decoding failure)
+///     - `.error`  : Expected but unrecoverable errors that require developer attention. (e.g., decoding failure)
 ///     - `.fault`  :  Unexpected and critical issues that should never occur.
 /// - Parameter attributes: Optional key/value metadata to attach.
 /// - Note: Fires off logging in a detached `Task`—does not block the caller.

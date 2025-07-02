@@ -14,14 +14,12 @@ struct NexusLoggerExampleApp: App {
     init() {
         Task {
             await NexusLogger.shared.addDestination(DefaultOSLoggerDestination())
-            NLog("   ", .success)
-            NLog("Logger|initialized", .success)
             NLog("Logger initialized", .debug)
             NLog("Logger initialized", .info)
-            NLog("Logger initialized", .success)
+            NLog("Notice", .notice)
             NLog("Logger initialized", .warning)
             NLog("Logger initialized", .error)
-            NLog("Logger initialized", .fault)
+            NLog("Fault", .fault)
         }
     }
 

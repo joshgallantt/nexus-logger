@@ -6,20 +6,23 @@
 //
 
 /// Represents the severity of a log message..
-/// Ordered from least to most critical: `.debug` < `.info` < `.success` < `.warning` < `.error` < `.fault`.
+/// Ordered from least to most critical: `.debug` < `.info` < `.notice` < `.warning` < `.error` < `.fault`.
 public enum NexusLogLevel: Int, Sendable, Comparable, CaseIterable {
 
-    /// Detailed debug info used during development.
-    /// Example: view lifecycle events, API request payloads.
-    case debug = 0
+    /// Very verbose diagnostic messages for in-depth troubleshooting.
+    /// Hidden by default in Console.app (OSLogType.debug).
+    /// Example: view lifecycle timings, full request/response payload dumps.
+    case debug
 
-    /// Informational messages about normal app behavior.
-    /// Example: screen navigation, configuration updates, user interaction.
+    /// Messages recording the normal operation of the system.
+    /// Hidden by default unless “Include Info” is enabled (OSLogType.info).
+    /// Example: user tapped a button, screen appeared, session refreshed.
     case info
 
-    /// Key positive events that may be useful for analytics or QA.
-    /// Example: login success, purchase completed.
-    case success
+    /// Normal but significant conditions that may require monitoring.
+    /// Always recorded by default (OSLogType.default).
+    /// Example: cache hits, number of items parsed, minor navigation events.
+    case notice
 
     /// Recoverable issues or unusual conditions.
     /// Example: missing optional field, entering degraded mode.
@@ -35,12 +38,12 @@ public enum NexusLogLevel: Int, Sendable, Comparable, CaseIterable {
     /// Emoji for quick visual identification in logs.
     public var emoji: String {
         switch self {
-        case .debug:     return "🟪"
-        case .info:      return "🟦"
-        case .success:   return "🟩"
-        case .warning:   return "🟨"
-        case .error:     return "🟥"
-        case .fault:     return "⬛️"
+        case .debug:    return "⬜"
+        case .info:     return "🟩"
+        case .notice:   return "🟦"
+        case .warning:  return "🟨"
+        case .error:    return "🟧"
+        case .fault:    return "🟥"
         }
     }
 
@@ -49,7 +52,7 @@ public enum NexusLogLevel: Int, Sendable, Comparable, CaseIterable {
         switch self {
         case .debug:     return "DEBUG"
         case .info:      return "INFO"
-        case .success:   return "SUCCESS"
+        case .notice:    return "NOTICE"
         case .warning:   return "WARNING"
         case .error:     return "ERROR"
         case .fault:     return "FAULT"

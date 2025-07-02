@@ -12,22 +12,27 @@ import os
 public struct DefaultOSLoggerDestination: NexusLogDestination {
     
     private let logger: Logger
+    private let queue: DispatchQueue
 
     public init(
         subsystem: String = Bundle.main.bundleIdentifier ?? "Unknown Bundle",
-        category: String = "NexusLogger"
+        category:  String = "NexusLogger"
     ) {
         self.logger = Logger(subsystem: subsystem, category: category)
+        self.queue  = DispatchQueue(
+            label: "\(subsystem).\(category)",
+            qos: .utility
+        )
     }
 
     private func osLogType(for level: NexusLogLevel) -> OSLogType {
         switch level {
-        case .debug:    return .debug
-        case .info:     return .info
-        case .success:  return .default
-        case .warning:  return .error
-        case .error:    return .error
-        case .fault:    return .fault
+        case .debug:   return .debug
+        case .info:    return .info
+        case .notice:  return .default
+        case .warning: return .error
+        case .error:   return .error
+        case .fault:   return .fault
         }
     }
 
@@ -43,47 +48,41 @@ public struct DefaultOSLoggerDestination: NexusLogDestination {
         message: String,
         attributes: [String: String]? = nil
     ) async {
-        // 0) Normalize the message
+        // 1) Build the log string synchronously
         let trimmed = message.trimmingCharacters(in: .whitespacesAndNewlines)
         let nonEmpty = trimmed.isEmpty ? "<no message>" : trimmed
 
-        // 1) Sanitize fields
-        let msgField     = sanitizeString(nonEmpty)
-        let timeField    = sanitizeString(time)
-        let bundleField  = sanitizeString(bundleName)
-        let versionField = sanitizeString(appVersion)
-        let fileLine     = "\(sanitizeString(fileName)):\(lineNumber)"
-        let threadField  = sanitizeString(threadName)
-        let funcField    = sanitizeString(functionName)
-
-        // 2) Build sections
         let sections = [
             "\(level.emoji)\(level.name)",
-            timeField,
-            bundleField,
-            versionField,
-            fileLine,
-            threadField,
-            funcField,
-            "\"\(msgField)\""
+            sanitizeString(time),
+            sanitizeString(bundleName),
+            sanitizeString(appVersion),
+            "\(sanitizeString(fileName)):\(lineNumber)",
+            sanitizeString(threadName),
+            sanitizeString(functionName),
+            "\"\(sanitizeString(nonEmpty))\""
         ]
-        
-        let sectionsDelimitted = sections.joined(separator: "|")
+        let base = sections.joined(separator: "|")
 
-        // 3) Append attributes if present
         let attrPart: String
-        if let pairs = attributes, !pairs.isEmpty {
-            let kvs = pairs
-                .map { key, val in "\(sanitizeString(key))=\(sanitizeString(val))" }
+        if let attrs = attributes, !attrs.isEmpty {
+            let kvs = attrs
+                .map { sanitizeString($0.key) + "=" + sanitizeString($0.value) }
                 .joined(separator: ",")
             attrPart = "|\(kvs)"
         } else {
             attrPart = ""
         }
 
-        // 4) Emit to os.Logger
-        let output = sectionsDelimitted + attrPart
-        logger.log(level: osLogType(for: level), "\(output)")
+        let output = base + attrPart
+
+        // 2) Enqueue the actual os.Logger call on our serial queue
+        queue.async {
+            self.logger.log(
+                level: self.osLogType(for: level),
+                "\(output)"
+            )
+        }
     }
 
     private func sanitizeString(_ input: String) -> String {

@@ -31,13 +31,13 @@ public actor NexusLogger: NexusLoggerProtocol {
         f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         return f
     }()
-
+    
     public init() {}
-
+    
     public func addDestination(_ destination: NexusLogDestination) {
         destinations.append(destination)
     }
-
+    
     public func log(
         _ message: String,
         _ level: NexusLogLevel = .info,
@@ -64,20 +64,18 @@ public actor NexusLogger: NexusLoggerProtocol {
         )
         
         for dest in destinations {
-            Task {
-                await dest.log(
-                    level:        entry.level,
-                    time:         entry.time,
-                    bundleName:   entry.bundleName,
-                    appVersion:   entry.appVersion,
-                    fileName:     entry.fileName,
-                    lineNumber:   entry.lineNumber,
-                    threadName:   entry.threadName,
-                    functionName: entry.functionName,
-                    message:      entry.message,
-                    attributes:   entry.attributes
-                )
-            }
+            await dest.log(
+                level:        entry.level,
+                time:         entry.time,
+                bundleName:   entry.bundleName,
+                appVersion:   entry.appVersion,
+                fileName:     entry.fileName,
+                lineNumber:   entry.lineNumber,
+                threadName:   entry.threadName,
+                functionName: entry.functionName,
+                message:      entry.message,
+                attributes:   entry.attributes
+            )
         }
     }
 }
