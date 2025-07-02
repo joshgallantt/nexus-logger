@@ -5,7 +5,7 @@
 //  Created by Josh Gallant on 01/07/2025.
 //
 
-/// Represents the severity of a log message in an iOS app.
+/// Represents the severity of a log message..
 /// Ordered from least to most critical: `.debug` < `.info` < `.success` < `.warning` < `.error` < `.fault`.
 public enum NexusLogLevel: Int, Sendable, Comparable, CaseIterable {
 
